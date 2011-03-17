@@ -1,3 +1,6 @@
+
+module Card where
+
 import Debug.Trace
 import Data.Char
 import List
@@ -115,6 +118,7 @@ check_pair (a:b:xs)
              Just c -> Just c
              Nothing -> Just a
     | otherwise = check_pair (b:xs)
+check_pair _ = Nothing
                             
 
 
@@ -126,15 +130,10 @@ groupFilterByLengthMinMax m n xs =
 
 -- requires input sorted by value
 check_two_pair ::  Eq a => [a] -> Maybe (a, a)
-check_two_pair (a:b:c:d:e:[])
-    | a == b && c == d = Just (a, c)
-    | a == b && d == e = Just (a, d)
-    | b == c && d == e = Just (b, d)
-    | otherwise = Nothing
 check_two_pair xs =
     let best = (take 2 . reverse . groupFilterByLengthMin 2) xs in
         case best of
-             ((a:as):(b:bs):[]) -> Just (b, a)
+             ((a:as):(b:bs):[]) -> Just (a, b)
              _ -> Nothing
 
 
@@ -207,6 +206,7 @@ check_straight (a:b:c:d:e:[]) =
     check a b c d e
     where
         check Ace Two Three Four Five = Just Five
+        check Two Three Four Five Ace = Just Five
         check Two Three Four Five Six = Just Six
         check Three Four Five Six Seven = Just Seven
         check Four Five Six Seven Eight = Just Eight
@@ -226,6 +226,8 @@ check_straight xs =
                              Ace:_ -> _check_straight (Ace:xs)
                              _ -> Nothing
     where
+        _check_straight (a:b:c:d:e:[]) =
+            check_straight (a:b:c:d:e:[])
         _check_straight (a:b:c:d:e:xs) =
             let g = group (a:b:c:d:e:xs) in
                 case g of
@@ -279,7 +281,7 @@ getHand cards =
                                case check_flush (sortBySuits (sortByValues cards)) of
                                     Just card -> Flush card
                                     Nothing ->
-                                        case check_straight ((sort . takeValues) (cards))of
+                                        case check_straight ((sort . takeValues) (cards)) of
                                              Just card -> Straight card
                                              Nothing ->
                                                  check_three_and_less cards
@@ -295,3 +297,5 @@ getHand cards =
                                    Just card -> Pair card
                                    Nothing ->
                                        HighCard ((head . reverse . sort . takeValues) (cards))
+
+getHandForString = getHand . parse_deck
