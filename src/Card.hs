@@ -23,16 +23,16 @@ import Data.Char
 import List
 
 data Suit = Spades | Hearts | Diamonds | Clubs
-    deriving (Eq, Ord, Show)
+    deriving (Eq, Ord, Show, Read)
 
 data Value = Two | Three | Four | Five | Six | Seven | Eight | Nine | Ten |
     Jack | Queen | King | Ace
-    deriving (Eq, Ord, Show)
+    deriving (Eq, Ord, Show, Read, Enum, Bounded)
 
 data Card = Card {
     cardVal :: Value,
     cardSuit :: Suit
-    } deriving (Eq, Ord, Show)
+    } deriving (Eq, Ord, Show, Read)
 
 
 takeValues ::  [Card] -> [Value]
